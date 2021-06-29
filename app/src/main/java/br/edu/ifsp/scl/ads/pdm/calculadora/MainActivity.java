@@ -1,8 +1,12 @@
 package br.edu.ifsp.scl.ads.pdm.calculadora;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -131,6 +135,29 @@ public class MainActivity extends AppCompatActivity {
     public void zeroOnClick(View view)
     {
         setExpressao("0");
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_calculadora, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+       switch (item.getItemId()) {
+           case R.id.calcAvancMi:
+               Intent avancadaIntent = new Intent("AVANCADA_ACTION");
+               startActivity(avancadaIntent);
+               return true;
+
+           case R.id.calcSimplesMi:
+               Intent simplesIntent = new Intent(this, MainActivity.class);
+               startActivity(simplesIntent);
+               return true;
+       }
+
+        return false;
     }
 
 }
