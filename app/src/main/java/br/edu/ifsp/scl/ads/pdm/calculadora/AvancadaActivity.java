@@ -44,7 +44,14 @@ public class AvancadaActivity extends AppCompatActivity {
     {
         Double result = null;
         ScriptEngine engine = new ScriptEngineManager().getEngineByName("rhino");
-        checkExpo();
+
+        if(expressao.contains("%")) {
+            checkPorcent();
+        } else if (expressao.contains("^")) {
+            checkExpo();
+        } else {
+            checkRaiz();
+        }
 
         try {
             result = (double)engine.eval(formula);
@@ -55,6 +62,8 @@ public class AvancadaActivity extends AppCompatActivity {
 
         if(result != null)
             activityAvancadaBinding.resultTv.setText(String.valueOf(result.doubleValue()));
+
+        System.out.println(formula);
     }
 
     private void checkExpo()
@@ -70,12 +79,12 @@ public class AvancadaActivity extends AppCompatActivity {
         tempFormula = expressao;
         for(Integer index: indexOfPowers)
         {
-            mudaFormula(index);
+            mudaFormulaExpo(index);
         }
         formula = tempFormula;
     }
 
-    private void mudaFormula(Integer index)
+    private void mudaFormulaExpo(Integer index)
     {
         String numberLeft = "";
         String numberRight = "";
@@ -98,6 +107,77 @@ public class AvancadaActivity extends AppCompatActivity {
 
         String original = numberLeft + "^" + numberRight;
         String changed = "Math.pow("+numberLeft+","+numberRight+")";
+        tempFormula = tempFormula.replace(original,changed);
+    }
+
+    private void checkRaiz()
+    {
+        ArrayList<Integer> indexOfPowers = new ArrayList<>();
+        for(int i = 0; i < expressao.length(); i++)
+        {
+            if (expressao.charAt(i) == '√')
+                indexOfPowers.add(i);
+        }
+
+        formula = expressao;
+        tempFormula = expressao;
+        for(Integer index: indexOfPowers)
+        {
+            mudaFormulaRaiz(index);
+        }
+        formula = tempFormula;
+    }
+
+    private void mudaFormulaRaiz(Integer index)
+    {
+        String numberRight = "";
+
+        for(int i = index + 1; i< expressao.length(); i++)
+        {
+            if(isNumeric(expressao.charAt(i)))
+                numberRight = numberRight + expressao.charAt(i);
+            else
+                break;
+        }
+
+        String original = "√" + numberRight;
+        String changed = "Math.sqrt("+numberRight+")";
+        tempFormula = tempFormula.replace(original,changed);
+    }
+
+    private void checkPorcent()
+    {
+        ArrayList<Integer> indexOfPowers = new ArrayList<>();
+        for(int i = 0; i < expressao.length(); i++)
+        {
+            if (expressao.charAt(i) == '%')
+                indexOfPowers.add(i);
+        }
+
+        formula = expressao;
+        tempFormula = expressao;
+        for(Integer index: indexOfPowers)
+        {
+            mudaFormulaPorcent(index);
+        }
+        formula = tempFormula;
+    }
+
+    private void mudaFormulaPorcent(Integer index)
+    {
+        String numberLeft = "";
+        String numberLeftConverted = "";
+
+        for(int i = index - 1; i >= 0; i--)
+        {
+            if(isNumeric(expressao.charAt(i)))
+                numberLeft = numberLeft + expressao.charAt(i);
+            else
+                break;
+        }
+
+        String original = numberLeftConverted + "%";
+        String changed = "" +numberLeftConverted +"/100";
         tempFormula = tempFormula.replace(original,changed);
     }
 
